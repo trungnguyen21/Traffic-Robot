@@ -1,8 +1,8 @@
-int s1 = 11; //Cảm biến nối chân số 2 Arduino
+int s1 = 11; // Cảm biến trái ngoài cùng
 int s2 = 10;
-int s3 = 9;
+int s3 = 9; // Cảm biến giữa
 int s4 = 8;
-int s5 = 7;
+int s5 = 7; // Cảm biến phải ngoài cùng
 int congtac = 13; //CLP
 int hongngoai = 12; //Near
 
@@ -17,35 +17,36 @@ void setup()
   pinMode(s3, INPUT);
   pinMode(s4, INPUT);
   pinMode(s5, INPUT);
+  
   pinMode(congtac, INPUT);
   pinMode(hongngoai, INPUT);
 
 }
 
-void loop() 
+// Code return 1 hoặc 0 để xác định có chạy hay ko để link với function chạy motor
+// Do chỉ băng qua đường (assume đường thẳng) nên chắc không cần các trường hợp rẽ hay ko
+int loop() 
 {  
   giatri1 = digitalRead(s1); //Đọc giá trị cảm biến s1 và gán vào biến giatri1
   giatri2 = digitalRead(s2);
   giatri3 = digitalRead(s3);
   giatri4 = digitalRead(s4);
   giatri5 = digitalRead(s5);
+  
+  // hiện giờ t chưa biết hồng ngoại với công tắc như nào
   gtcongtac = digitalRead(congtac);
   gthongngoai = digitalRead(hongngoai);
   
-  Serial.print("S1: ");
-  Serial.print(giatri1);Serial.print("   ");
-  Serial.print("S2: ");
-  Serial.print(giatri2);Serial.print("   ");
-  Serial.print("S3: ");
-  Serial.print(giatri3);Serial.print("   ");
-  Serial.print("S4: ");
-  Serial.print(giatri4);Serial.print("   ");
-  Serial.print("S5: ");
-  Serial.print(giatri5);Serial.print("   ");
-  Serial.print("Công tắc: ");
-  Serial.print(gtcongtac);Serial.print("   ");
-  Serial.print("Hồng ngoại: ");
-  Serial.println(gthongngoai);  
+  // Đọc được line trả giá trị 1, else 0
+  
+  if (!giatri1) & (giatri2) & (!giatri3) & (giatri4) & (!giatri5)
+  {
+    return 1; // Line có 2 đường thằng mà chỉ khi sensor số 2 và 4 đọc thì mới chạy, còn 3 cái còn lại ko 
+  }
+  else
+  {
+    return 0; // Có thể thêm các warning dùng loa âm thanh (hoặc robot tự chỉnh - complex hơn)
+  }
   delay(200);
 
 }
