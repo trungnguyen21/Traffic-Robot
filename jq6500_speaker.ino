@@ -1,3 +1,5 @@
+// LINK PREREQUISITE: https://sleemanj.github.io/JQ6500_Serial/html/index.html
+
 #include <Arduino.h>
 #include <SoftwareSerial.h>
 #include <JQ6500_Serial.h>
