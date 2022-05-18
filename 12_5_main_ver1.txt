@@ -1,20 +1,20 @@
 #include "UltraSonicDistanceSensor.h"
 
-int motor1Positive = 40;       //2 động cơ bên phải
-int motor1Negative = 38;
+int motor1Positive = 5;       //2 động cơ bên phải
+int motor1Negative = 4;
 
-int motor2Positive = 36;       //2 động cơ bên trái
-int motor2Negative = 34;
+int motor2Positive = 3;       //2 động cơ bên trái
+int motor2Negative = 2;
 
 int callValue;
 #define call_1 30             // điều khiển 1
 #define call_2 28             // điều khiển 2
 
 //  ĐÂY LÀ MẤY CÁI BIẾN KHOẢNG CÁCH
-const int caution = 50;
+const int caution = 30;
 const int danger = 20;
 const int safe = 10;
-const int frontStop = 50;
+const int frontStop = 20;
 
 int redLight = 22;
 int yellowLight = 24;
@@ -59,19 +59,10 @@ void setup() {
   pinMode(redLight, OUTPUT);
   pinMode(yellowLight, OUTPUT);
 
-  //Động cơ
-  
-  //EnA & EnB
-  pinMode(5, OUTPUT);       //EnB
-  pinMode(6, OUTPUT);       //EnA
-  
-  //Nguồn
   pinMode(motor1Positive, OUTPUT);
   pinMode(motor1Negative, OUTPUT);
   pinMode(motor2Positive, OUTPUT);
   pinMode(motor2Negative, OUTPUT);
-
-  //điều khiển
   pinMode(call_1, INPUT_PULLUP);
   pinMode(call_2, INPUT_PULLUP);
 
@@ -183,9 +174,6 @@ void stop() {
 
 void loop()
 {
-  analogWrite(6, 225);        //EnA Pin
-  analogWrite(5, 225);        //EnB Pin
-  
   digitalWrite(yellowLight, HIGH);
   digitalWrite(redLight, HIGH);
 
@@ -214,42 +202,39 @@ void loop()
   Serial.println(digitalRead(call_2));
 
 
+
   if ((digitalRead(call_1) == 0) || (digitalRead(call_2) == 0) || (backDistance <= 40)) {
-    if ((rightDistance > caution) && (leftDistance > caution) && (frontDistance > frontStop)) {
-      if ((giatri2 == 0) && (giatri3 == 0) && (giatri4 == 0)) {
+    if ((giatri2 == 0) && (giatri3 == 0) && (giatri4 == 0)) {
+      if ((rightDistance > caution) && (leftDistance > caution) && (frontDistance > frontStop)) {
         goForward();
         Serial.println("Khong chuong ngai, di thang");
+      } else {
+        if ((danger < rightDistance <= caution) || (danger < leftDistance <= caution)) {
+          goForward();
+          digitalWrite(yellowLight, LOW);
+        }
+        if ((rightDistance <= danger) || (leftDistance <= danger) || (frontDistance <= frontStop)) {
+          stop();
+          digitalWrite(yellowLight, HIGH);
+          digitalWrite(redLight, LOW);
+        }
+        if ((rightDistance <= safe) || (leftDistance <= safe)) {
+          goForward();
+          Serial.println("False Alarm");
+        }
       }
-      if ((giatri2 == 1) && (giatri3 <= 1) && (giatri4 == 0)) {
+    } else {
+      if ((giatri2 == 1) && (giatri3 == 0) && (giatri4 == 0)) {
+        turnRight();
+        delay(50);
+      }
+      if ((giatri2 == 0) && (giatri3 == 0) && (giatri4 == 1)) {
+        turnLeft();
+        delay(50);
+      }
+      if ((giatri2 == 1) && (giatri3 == 1) && (giatri4 == 1)) {
         turnRight();
       }
-      if ((giatri2 == 0) && (giatri3 <= 1) && (giatri4 == 1)) {
-        turnLeft();
-      }
-    }
-    else if ((danger < rightDistance <= caution) || (danger < leftDistance <= caution)) {
-      digitalWrite(yellowLight, LOW);       //bat den vang
-//      analogWrite(5, 200);        //giam toc do
-//      analogWrite(6, 200);        //giam toc do
-      Serial.println("Khoang cach canh bao");
-      if ((giatri2 == 0) && (giatri3 == 0) && (giatri4 == 0)) {
-        goForward();
-      }
-      if ((giatri2 == 1) && (giatri3 <= 1) && (giatri4 == 0)) {
-        turnRight();
-      }
-      if ((giatri2 == 0) && (giatri3 <= 1) && (giatri4 == 1)) {
-        turnLeft();
-      }
-    }
-    if ((rightDistance <= danger) || (leftDistance <= danger) || (frontDistance <= frontStop)) {
-      Serial.println("Nguy hiem, dung lai");
-      stop();
-      digitalWrite(yellowLight, HIGH);
-      digitalWrite(redLight, LOW);        //bat den do
-    }
-    if ((rightDistance <= safe) || (leftDistance <= safe)) {
-      goForward();
     }
   } else if ((digitalRead(call_1) == 1) && (digitalRead(call_2) == 1)) {
     stop();
