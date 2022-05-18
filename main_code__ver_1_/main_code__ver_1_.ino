@@ -11,9 +11,9 @@ int callValue;
 #define call_2 28             // điều khiển 2
 
 //  ĐÂY LÀ MẤY CÁI BIẾN KHOẢNG CÁCH
-const int caution = 50;
-const int danger = 20;
-const int safe = 10;
+const int caution = 70;
+const int danger = 50;
+const int safe = 20;
 const int frontStop = 50;
 
 int redLight = 22;
@@ -58,13 +58,15 @@ void setup() {
 
   pinMode(redLight, OUTPUT);
   pinMode(yellowLight, OUTPUT);
+  digitalWrite(yellowLight, HIGH);
+  digitalWrite(redLight, HIGH);
 
   //Động cơ
-  
+
   //EnA & EnB
   pinMode(5, OUTPUT);       //EnB
   pinMode(6, OUTPUT);       //EnA
-  
+
   //Nguồn
   pinMode(motor1Positive, OUTPUT);
   pinMode(motor1Negative, OUTPUT);
@@ -183,11 +185,9 @@ void stop() {
 
 void loop()
 {
-  analogWrite(6, 225);        //EnA Pin
-  analogWrite(5, 225);        //EnB Pin
-  
-  digitalWrite(yellowLight, HIGH);
-  digitalWrite(redLight, HIGH);
+  analogWrite(6, 255);        //EnA Pin
+  analogWrite(5, 255);        //EnB Pin
+
 
   int  giatri1 = digitalRead(s1); //Đọc giá trị cảm biến s1 và gán vào biến giatri1
   int  giatri2 = digitalRead(s2);
@@ -214,9 +214,10 @@ void loop()
   Serial.println(digitalRead(call_2));
 
 
-  if ((digitalRead(call_1) == 0) || (digitalRead(call_2) == 0) || (backDistance <= 40)) {
-    if ((rightDistance > caution) && (leftDistance > caution) && (frontDistance > frontStop)) {
-      if ((giatri2 == 0) && (giatri3 == 0) && (giatri4 == 0)) {
+  if ((digitalRead(call_1) == 0) || (digitalRead(call_2) == 0) || (backDistance <= 40)) {         //khoi dong xe
+    digitalWrite(yellowLight, LOW);
+    if ((rightDistance > caution) && (leftDistance > caution) && (frontDistance > frontStop)) {   //an toan
+      if ((giatri2 == 0) && (giatri3 == 0) && (giatri4 == 0)) {         // chinh line
         goForward();
         Serial.println("Khong chuong ngai, di thang");
       }
@@ -227,10 +228,9 @@ void loop()
         turnLeft();
       }
     }
-    else if ((danger < rightDistance <= caution) || (danger < leftDistance <= caution)) {
-      digitalWrite(yellowLight, LOW);       //bat den vang
-//      analogWrite(5, 200);        //giam toc do
-//      analogWrite(6, 200);        //giam toc do
+    if ((danger < rightDistance <= caution) || (danger < leftDistance <= caution)) {         // vung canh bao
+      //      analogWrite(5, 100);        //giam toc do
+      //      analogWrite(6, 100);        //giam toc do
       Serial.println("Khoang cach canh bao");
       if ((giatri2 == 0) && (giatri3 == 0) && (giatri4 == 0)) {
         goForward();
@@ -242,17 +242,27 @@ void loop()
         turnLeft();
       }
     }
-    if ((rightDistance <= danger) || (leftDistance <= danger) || (frontDistance <= frontStop)) {
+    if ((rightDistance <= danger) || (leftDistance <= danger) || (frontDistance <= frontStop)) {        // vung nguy hiem
       Serial.println("Nguy hiem, dung lai");
       stop();
-      digitalWrite(yellowLight, HIGH);
-      digitalWrite(redLight, LOW);        //bat den do
     }
-    if ((rightDistance <= safe) || (leftDistance <= safe)) {
-      goForward();
+
+    if ((rightDistance <= safe) || (leftDistance <= safe)) {      //vung an toan
+      if ((giatri2 == 0) && (giatri3 == 0) && (giatri4 == 0)) {
+        goForward();
+      }
+      if ((giatri2 == 1) && (giatri3 <= 1) && (giatri4 == 0)) {
+        turnRight();
+      }
+      if ((giatri2 == 0) && (giatri3 <= 1) && (giatri4 == 1)) {
+        turnLeft();
+      }
     }
-  } else if ((digitalRead(call_1) == 1) && (digitalRead(call_2) == 1)) {
+  } else if ((digitalRead(call_1) == 1) && (digitalRead(call_2) == 1)) {       //khong ai goi
     stop();
     Serial.println("stop2");
+  }
+  if ((giatri2 == 1) && (giatri3 == 1) && (giatri4 == 1)) {           //quay dau
+    turnRight();
   }
 }
