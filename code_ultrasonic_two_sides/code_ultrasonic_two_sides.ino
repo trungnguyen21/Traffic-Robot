@@ -24,6 +24,7 @@ void loop() {
   digitalWrite(leftTrig, HIGH);
 
   unsigned long LowLevelTimeLeft  = pulseIn(leftEcho, LOW);
+<<<<<<< HEAD
   if (LowLevelTimeLeft >= 50000) {
     Serial.println("Invalid");
   }
@@ -35,6 +36,9 @@ void loop() {
     Serial.println(" cm");
   }
   
+=======
+
+>>>>>>> e4abf3effffe906b51cce532feaef7c0df68981b
   Serial.print("Distance Right = ");
   digitalWrite(rightTrig, LOW);
   digitalWrite(rightTrig, HIGH);
@@ -45,11 +49,15 @@ void loop() {
     Serial.println("Invalid");
   } else {
     rightDistance = LowLevelTimeRight / 50;
+<<<<<<< HEAD
     Serial.println(LowLevelTimeRight);
+=======
+>>>>>>> e4abf3effffe906b51cce532feaef7c0df68981b
     Serial.print(rightDistance);
     Serial.println(" cm");
   }
   
+<<<<<<< HEAD
 
 
 //  if ((leftDistance <= 600) && (leftDistance >= 200) || (rightDistance <= 600) && (rightDistance >= 200)) {
@@ -57,6 +65,23 @@ void loop() {
 //  } else {
 //    goForward();
 //  }
+=======
+  if (LowLevelTimeLeft >= 50000) {
+    Serial.println("Invalid");
+  }
+  else
+  {
+    leftDistance = LowLevelTimeLeft / 50;
+    Serial.print(leftDistance);
+    Serial.println(" cm");
+  }
+
+  if ((leftDistance <= 600) && (leftDistance >= 200) || (rightDistance <= 600) && (rightDistance >= 200)) {
+    stop();
+  } else {
+    goForward();
+  }
+>>>>>>> e4abf3effffe906b51cce532feaef7c0df68981b
   
   delay(500);
 }
