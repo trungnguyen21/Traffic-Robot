@@ -246,18 +246,18 @@ void loop()
       Serial.println("Nguy hiem, dung lai");
       stop();
     }
-
-    if ((rightDistance <= safe) || (leftDistance <= safe)) {      //vung an toan
-      if ((giatri2 == 0) && (giatri3 == 0) && (giatri4 == 0)) {
-        goForward();
-      }
-      if ((giatri2 == 1) && (giatri3 <= 1) && (giatri4 == 0)) {
-        turnRight();
-      }
-      if ((giatri2 == 0) && (giatri3 <= 1) && (giatri4 == 1)) {
-        turnLeft();
-      }
-    }
+//
+//    if ((rightDistance <= safe) || (leftDistance <= safe)) {      //vung an toan
+//      if ((giatri2 == 0) && (giatri3 == 0) && (giatri4 == 0)) {
+//        goForward();
+//      }
+//      if ((giatri2 == 1) && (giatri3 <= 1) && (giatri4 == 0)) {
+//        turnRight();
+//      }
+//      if ((giatri2 == 0) && (giatri3 <= 1) && (giatri4 == 1)) {
+//        turnLeft();
+//      }
+//    }
   } else if ((digitalRead(call_1) == 1) && (digitalRead(call_2) == 1)) {       //khong ai goi
     stop();
     Serial.println("stop2");
@@ -265,4 +265,5 @@ void loop()
   if ((giatri2 == 1) && (giatri3 == 1) && (giatri4 == 1)) {           //quay dau
     turnRight();
   }
+//  delay(500);
 }
