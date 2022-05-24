@@ -4,8 +4,8 @@
 #include <SoftwareSerial.h>
 #include <JQ6500_Serial.h>
 
-int tx = 27;
-int rx = 28;
+int tx = 31;
+int rx = 33;
 
 SoftwareSerial mySerial(tx, rx);
 JQ6500_Serial mp3(mySerial);
@@ -20,5 +20,5 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   //insert dieu kien
-  mp3.play();
+  mp3.play(); 
 }

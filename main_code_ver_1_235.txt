@@ -1,7 +1,5 @@
 #include "UltraSonicDistanceSensor.h"
 
-int caseID = 4;
-
 int motor1Positive = 40;       //2 động cơ bên phải
 int motor1Negative = 38;
 
@@ -13,10 +11,10 @@ int callValue;
 #define call_2 28             // điều khiển 2
 
 //  ĐÂY LÀ MẤY CÁI BIẾN KHOẢNG CÁCH
-const int caution = 55;
-const int danger = 35;
+const int caution = 70;
+const int danger = 50;
 const int safe = 20;
-const int frontStop = 30;
+const int frontStop = 50;
 
 int redLight = 22;
 int yellowLight = 24;
@@ -48,6 +46,7 @@ int rightTrig = 51;
 int rightEcho = 50;
 
 unsigned int leftDistance, rightDistance, frontDistance, backDistance;
+
 UltraSonicDistanceSensor distanceBack(trigBack, echoBack);  // Initialize sensor that uses digital pins 43 and 42
 UltraSonicDistanceSensor distanceFront(trigFront, echoFront);  // Initialize sensor that uses digital pins 45 and 44
 double valuecm1 = 0;
@@ -96,7 +95,6 @@ void setup() {
   pinMode(rightEcho, INPUT);
   delay(500);
 }
-
 
 
 void leftSensor() {
@@ -184,13 +182,12 @@ void stop() {
   digitalWrite(motor2Negative, LOW);
 }
 
-void defaultOperate() {
-  Serial.print("S2: ");
-  Serial.print(giatri2); Serial.print("   ");
-  Serial.print("S3: ");
-  Serial.print(giatri3); Serial.print("   ");
-  Serial.print("S4: ");
-  Serial.print(giatri4); Serial.print("   ");
+
+void loop()
+{
+  analogWrite(6, 255);        //EnA Pin
+  analogWrite(5, 255);        //EnB Pin
+
 
   int  giatri1 = digitalRead(s1); //Đọc giá trị cảm biến s1 và gán vào biến giatri1
   int  giatri2 = digitalRead(s2);
@@ -198,91 +195,75 @@ void defaultOperate() {
   int  giatri4 = digitalRead(s4);
   int  giatri5 = digitalRead(s5);
 
-  if ((giatri2 == 0) && (giatri3 == 0) && (giatri4 == 0)) {         // chinh line
-    goForward();
-  }
-  if ((giatri2 == 1) && (giatri3 <= 1) && (giatri4 == 0)) {
-    turnRight();
-  }
-  if ((giatri2 == 0) && (giatri3 <= 1) && (giatri4 == 1)) {
-    turnLeft();
-  }
-}
-
-int setupCaseID() {
-  if ((rightDistance > 50) && (leftDistance > 50) && (frontDistance > 30)) {   //an toan
-    caseID = 0;
-    Serial.print("caseID = ");
-    Serial.println(caseID);
-  }
-  else if (((35 < rightDistance) && (rightDistance < 50)) || ((35 < leftDistance) && (leftDistance < 50))) {         // vung canh bao
-    caseID = 1;
-    Serial.print("caseID = ");
-    Serial.println(caseID);
-  }
-  else if (((rightDistance > 10) && (rightDistance < 35)) || ((leftDistance > 10) && (leftDistance < 35)) || (frontDistance < 30)) {        // vung nguy hiem
-    caseID = 2;
-    Serial.print("caseID = ");
-    Serial.println(caseID);
-  }
-  else if ((rightDistance < 10) || (leftDistance < 10)) {
-    caseID = 3;
-    Serial.print("caseID = ");
-    Serial.println(caseID);
-  }
-  return caseID;
-}
-
-//void caseCaution() {
-//  if ((35 < rightDistance < 50) || (35 < leftDistance < 50)) {         // vung canh bao
-//    Serial.println("Khoang cach canh bao");
-//    caseID = 1;
-//    Serial.print("caseID = ");
-//    Serial.println(caseID);
-//  }
-//}
-//
-//void defaultCase() {
-//  if ((rightDistance > 50) && (leftDistance > 50) && (frontDistance > 30)) {   //an toan
-//    caseID = 0;
-//    Serial.println("Khoang cach an toan");
-//    Serial.print("caseID = ");
-//    Serial.println(caseID);
-//  }
-//}
-void loop()
-{
-  frontSensor();
-  backSensor();
+  //sieu am
   leftSensor();
   rightSensor();
+  backSensor();
+  frontSensor();
 
 
-  caseID = setupCaseID();
   //sieu am
+
+  Serial.print("S2: ");
+  Serial.print(giatri2); Serial.print("   ");
+  Serial.print("S3: ");
+  Serial.print(giatri3); Serial.print("   ");
+  Serial.print("S4: ");
+  Serial.print(giatri4); Serial.print("   ");
+  Serial.println(digitalRead(call_1));
+  Serial.println(digitalRead(call_2));
+
+
   if ((digitalRead(call_1) == 0) || (digitalRead(call_2) == 0) || (backDistance <= 40)) {         //khoi dong xe
-    if (caseID == 0) {
-      Serial.println("Khoang cach an toan");
-      defaultOperate();
-    } else if (caseID == 1) {
+    digitalWrite(yellowLight, LOW);
+    if ((rightDistance > caution) && (leftDistance > caution) && (frontDistance > frontStop)) {   //an toan
+      if ((giatri2 == 0) && (giatri3 == 0) && (giatri4 == 0)) {         // chinh line
+        goForward();
+        Serial.println("Khong chuong ngai, di thang");
+      }
+      if ((giatri2 == 1) && (giatri3 <= 1) && (giatri4 == 0)) {
+        turnRight();
+      }
+      if ((giatri2 == 0) && (giatri3 <= 1) && (giatri4 == 1)) {
+        turnLeft();
+      }
+    }
+    if ((danger < rightDistance <= caution) || (danger < leftDistance <= caution)) {         // vung canh bao
+      //      analogWrite(5, 100);        //giam toc do
+      //      analogWrite(6, 100);        //giam toc do
       Serial.println("Khoang cach canh bao");
-      defaultOperate();
-    } else if (caseID == 2) {
+      if ((giatri2 == 0) && (giatri3 == 0) && (giatri4 == 0)) {
+        goForward();
+      }
+      if ((giatri2 == 1) && (giatri3 <= 1) && (giatri4 == 0)) {
+        turnRight();
+      }
+      if ((giatri2 == 0) && (giatri3 <= 1) && (giatri4 == 1)) {
+        turnLeft();
+      }
+    }
+    if ((rightDistance <= danger) || (leftDistance <= danger) || (frontDistance <= frontStop)) {        // vung nguy hiem
       Serial.println("Nguy hiem, dung lai");
       stop();
-      delay(2000);
-    } else if (caseID == 3) {
-      defaultOperate();
-      Serial.println("Khoang cach an toan 2");      
     }
+//
+//    if ((rightDistance <= safe) || (leftDistance <= safe)) {      //vung an toan
+//      if ((giatri2 == 0) && (giatri3 == 0) && (giatri4 == 0)) {
+//        goForward();
+//      }
+//      if ((giatri2 == 1) && (giatri3 <= 1) && (giatri4 == 0)) {
+//        turnRight();
+//      }
+//      if ((giatri2 == 0) && (giatri3 <= 1) && (giatri4 == 1)) {
+//        turnLeft();
+//      }
+//    }
   } else if ((digitalRead(call_1) == 1) && (digitalRead(call_2) == 1)) {       //khong ai goi
     stop();
     Serial.println("stop2");
-    digitalWrite(yellowLight, HIGH);
-    digitalWrite(redLight, HIGH);
   }
   if ((giatri2 == 1) && (giatri3 == 1) && (giatri4 == 1)) {           //quay dau
     turnRight();
   }
-  delay(1000);
+//  delay(500);
 }
