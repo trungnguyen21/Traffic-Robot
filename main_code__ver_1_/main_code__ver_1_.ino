@@ -233,23 +233,6 @@ int setupCaseID() {
   return caseID;
 }
 
-//void caseCaution() {
-//  if ((35 < rightDistance < 50) || (35 < leftDistance < 50)) {         // vung canh bao
-//    Serial.println("Khoang cach canh bao");
-//    caseID = 1;
-//    Serial.print("caseID = ");
-//    Serial.println(caseID);
-//  }
-//}
-//
-//void defaultCase() {
-//  if ((rightDistance > 50) && (leftDistance > 50) && (frontDistance > 30)) {   //an toan
-//    caseID = 0;
-//    Serial.println("Khoang cach an toan");
-//    Serial.print("caseID = ");
-//    Serial.println(caseID);
-//  }
-//}
 void loop()
 {
   frontSensor();
@@ -262,18 +245,26 @@ void loop()
   //sieu am
   if ((digitalRead(call_1) == 0) || (digitalRead(call_2) == 0) || (backDistance <= 40)) {         //khoi dong xe
     if (caseID == 0) {
+      digitalWrite(yellowLight, HIGH);
+      digitalWrite(redLight, HIGH);
       Serial.println("Khoang cach an toan");
       defaultOperate();
     } else if (caseID == 1) {
+      digitalWrite(yellowLight, LOW);
+      digitalWrite(redLight, HIGH);
       Serial.println("Khoang cach canh bao");
       defaultOperate();
     } else if (caseID == 2) {
+      digitalWrite(yellowLight, HIGH);
+      digitalWrite(redLight, LOW);
       Serial.println("Nguy hiem, dung lai");
       stop();
       delay(2000);
     } else if (caseID == 3) {
+      digitalWrite(yellowLight, HIGH);
+      digitalWrite(redLight, HIGH);
       defaultOperate();
-      Serial.println("Khoang cach an toan 2");      
+      Serial.println("Khoang cach an toan 2");
     }
   } else if ((digitalRead(call_1) == 1) && (digitalRead(call_2) == 1)) {       //khong ai goi
     stop();
